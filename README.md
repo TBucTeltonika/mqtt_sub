@@ -6,8 +6,11 @@ Backend application that is responsible for mqtt client part.
 
 # Features
 Supports TLS
+
 Can subscribe to any topic
+
 QoS levels supported.
+
 Data is written to to internal database.
 
 # Other
