@@ -7,8 +7,7 @@
 static int create_table(sqlite3 *db)
 {
 	sqlite3_stmt *stmt = NULL;
-	if (sqlite3_prepare_v2(db, TABLE_STR, -1, &stmt, NULL))
-	{
+	if (sqlite3_prepare_v2(db, TABLE_STR, -1, &stmt, NULL)){
 		printf("Error executing sql statement\n");
 		sqlite3_close(db);
 	}
@@ -21,8 +20,7 @@ static int create_table(sqlite3 *db)
 sqlite3 *get_db()
 {
 	static sqlite3 *db = NULL;
-	if (db == NULL && sqlite3_open(DATABASE, &db))
-	{
+	if (db == NULL && sqlite3_open(DATABASE, &db)){
 		printf("Could not open the db\n");
 		exit(-1);
 	}
@@ -34,8 +32,7 @@ sqlite3 *get_db()
 sqlite3_stmt *get_stmt()
 {
 	sqlite3_stmt *stmt = NULL;
-	if (sqlite3_prepare_v2(get_db(), STATEMENT_STR, -1, &stmt, NULL))
-	{
+	if (sqlite3_prepare_v2(get_db(), STATEMENT_STR, -1, &stmt, NULL)){
 		printf("Error executing sql statement\n");
 		sqlite3_close(get_db());
 	}
