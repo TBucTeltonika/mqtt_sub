@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <sqlite3.h>
 #include <time.h>
-
+#include "logger.h"
 //Get database resources. If database doesn't exist it is initialized.
 sqlite3* get_db();
 //Get Sqlite statment. For insert only.

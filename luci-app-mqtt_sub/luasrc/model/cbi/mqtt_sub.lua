@@ -8,15 +8,17 @@ m = Map("mqtt_sub", translate("MQTT client"), translate("An MQTT client is a cli
     remote_addr:depends("enabled", "1")
     remote_addr.placeholder  = "www.example.com"
     remote_addr.datatype = "host"
-    remote_addr.parse = function(self, section, novld, ...)
-        local enabled = luci.http.formvalue("cbid.mqtt_sub.mqtt_sub.enabled")
-        local value = self:formvalue(section)
-        if enabled and (value == nil or value == "") then
-            self:add_error(section, "invalid", "Error: hostname is empty")
+
+    function remote_addr.parse(self, section, novld, ...)
+        local val = self:formvalue(section)
+        if val and #val == 0 then
+            self:add_error(section, "invalid", translate("Empty address field"))
+            return false
+        elseif val then
+            Value.parse(self, section, novld, ...)
         end
-        Value.parse(self, section, novld, ...)
     end
- 
+
     remote_port = s:option(Value, "remote_port", translate("Port"), translate("Specify port of the broker"))
     remote_port:depends("enabled", "1")
     remote_port.default = "1883"

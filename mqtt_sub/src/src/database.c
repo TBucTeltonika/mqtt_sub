@@ -2,14 +2,14 @@
 
 #define DATABASE "/log/mqtt_sub_log.db"
 #define STATEMENT_STR "INSERT INTO log (TIME, TOPIC, PAYLOAD) VALUES (?, ?, ?)"
-#define TABLE_STR "CREATE TABLE IF NOT EXISTS log (id INTEGER PRIMARY KEY AUTOINCREMENT, TIME INTEGER, TOPIC TEXT, PAYLOAD TEXT);"
+#define TABLE_STR \
+	"CREATE TABLE IF NOT EXISTS log (id INTEGER PRIMARY KEY AUTOINCREMENT, TIME INTEGER, TOPIC TEXT, PAYLOAD TEXT);"
 
 static int create_table(sqlite3 *db)
 {
 	sqlite3_stmt *stmt = NULL;
-	if (sqlite3_prepare_v2(db, TABLE_STR, -1, &stmt, NULL))
-	{
-		printf("Error executing sql statement\n");
+	if (sqlite3_prepare_v2(db, TABLE_STR, -1, &stmt, NULL)) {
+		TRACE_LOG(LOG_ERR, "Error executing sql statement\n");
 		sqlite3_close(db);
 	}
 	if (stmt != NULL)
@@ -21,12 +21,10 @@ static int create_table(sqlite3 *db)
 sqlite3 *get_db()
 {
 	static sqlite3 *db = NULL;
-	if (db == NULL && sqlite3_open(DATABASE, &db))
-	{
-		printf("Could not open the db\n");
+	if (db == NULL && sqlite3_open(DATABASE, &db)) {
+		TRACE_LOG(LOG_ERR, "Could not open the db\n");
 		exit(-1);
-	}
-	else
+	} else
 		create_table(db);
 	return db;
 }
@@ -34,9 +32,8 @@ sqlite3 *get_db()
 sqlite3_stmt *get_stmt()
 {
 	sqlite3_stmt *stmt = NULL;
-	if (sqlite3_prepare_v2(get_db(), STATEMENT_STR, -1, &stmt, NULL))
-	{
-		printf("Error executing sql statement\n");
+	if (sqlite3_prepare_v2(get_db(), STATEMENT_STR, -1, &stmt, NULL)) {
+		TRACE_LOG(LOG_ERR, "Error executing sql statement\n");
 		sqlite3_close(get_db());
 	}
 	return stmt;
@@ -44,14 +41,14 @@ sqlite3_stmt *get_stmt()
 
 int insert_into_db(char *topic, char *payload)
 {
-	int rc = 0;
+	int		 rc = 0;
 	sqlite3 *db = get_db();
 
 	/* Prepare a statement for multiple use:*/
 
 	sqlite3_stmt *stmt = get_stmt();
 
-	//Get epoch date
+	// Get epoch date
 	int date = (int)time(NULL);
 
 	rc = sqlite3_bind_int(stmt, 1, date);
@@ -66,7 +63,7 @@ int insert_into_db(char *topic, char *payload)
 	if (rc != 0)
 		TRACE_LOG(1, "sqlite3_bind_text2 failed. rc: %d\n", rc);
 
-	//execute statement
+	// execute statement
 	rc = sqlite3_step(stmt);
 	if (rc != SQLITE_DONE)
 		TRACE_LOG(1, "step failed. rc: %d\n", rc);
